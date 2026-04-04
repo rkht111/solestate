@@ -128,3 +128,9 @@
     @apply font-sans;
   }
 }
+.wallet-adapter-button {
+  background: linear-gradient(90deg, #63b3ed, #76e4f7) !important;
+  color: black !important;
+  font-weight: bold !important;
+  border-radius: 12px !important;
+}
