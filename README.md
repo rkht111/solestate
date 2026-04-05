@@ -1,29 +1,4 @@
-[10:03 AM, 05.04.2026] Rakhat: SolEstate — Fractional Real Estate Ownership on Solana
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-14F195.svg)](LICENSE)
-[![Solana](https://img.shields.io/badge/Solana-devnet-9945FF)](https://solana.com)
-[![Hackathon](https://img.shields.io/badge/Decentrathon-2026-14F195)](https://colosseum.org)
-
-> A real-world asset tokenization platform built on Solana. Buy fractional ownership of real estate starting from $50 and earn rental income automatically through smart contracts.
-
-[Live Demo](https://solestate-psi.vercel.app) · [Smart Contract](#) · [Video Demo](#)
-
----
-
-## Team
-
-| Name | Role |
-|------|------|
-| Marat | Full-stack Developer |
-
----
-
-## Problem
-
-Real estate is one of the most reliable asset classes, but remains inaccessible to most people:
-
-- *High barrier to entry* —
-[10:04 AM, 05.04.2026] Rakhat: # SolEstate — Fractional Real Estate Ownership on Solana
+# SolEstate — Fractional Real Estate Ownership on Solana
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-14F195.svg)](LICENSE)
 [![Solana](https://img.shields.io/badge/Solana-devnet-9945FF)](https://solana.com)
