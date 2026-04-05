@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+[10:03 AM, 05.04.2026] Rakhat: SolEstate — Fractional Real Estate Ownership on Solana
 
-## Getting Started
+[![License: MIT](https://img.shields.io/badge/License-MIT-14F195.svg)](LICENSE)
+[![Solana](https://img.shields.io/badge/Solana-devnet-9945FF)](https://solana.com)
+[![Hackathon](https://img.shields.io/badge/Decentrathon-2026-14F195)](https://colosseum.org)
 
-First, run the development server:
+> A real-world asset tokenization platform built on Solana. Buy fractional ownership of real estate starting from $50 and earn rental income automatically through smart contracts.
+
+[Live Demo](https://solestate-psi.vercel.app) · [Smart Contract](#) · [Video Demo](#)
+
+---
+
+## Team
+
+| Name | Role |
+|------|------|
+| Marat | Full-stack Developer |
+
+---
+
+## Problem
+
+Real estate is one of the most reliable asset classes, but remains inaccessible to most people:
+
+- *High barrier to entry* —
+[10:04 AM, 05.04.2026] Rakhat: # SolEstate — Fractional Real Estate Ownership on Solana
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-14F195.svg)](LICENSE)
+[![Solana](https://img.shields.io/badge/Solana-devnet-9945FF)](https://solana.com)
+[![Hackathon](https://img.shields.io/badge/Decentrathon-2026-14F195)](https://colosseum.org)
+
+> Buy fractional ownership of real estate from $50 and earn rental income automatically on Solana.
+
+[Live Demo](https://solestate-psi.vercel.app)
+
+---
+
+## Team
+
+| Name | Role |
+|------|------|
+| Nurlan | Team Lead & Blockchain Developer |
+| Ramina | UI/UX Designer & Frontend Developer |
+| Rakhat | Full-stack Developer |
+
+---
+
+## Problem
+
+- Buying real estate requires hundreds of thousands of dollars
+- No way to own a small fraction of a property
+- Rental income is not transparent
+- Ownership transfer is slow and expensive
+
+---
+
+## Solution
+
+SolEstate tokenizes real estate into 1000 SPL tokens on Solana. Each token = 0.1% ownership. Rental income is distributed automatically through smart contracts.
+
+---
+
+## Why Solana
+
+- Ownership exists only on-chain — no centralized database
+- SPL tokens enforce ownership via wallet signature
+- Yield distributed to 100+ investors for fractions of a cent
+- Proof-of-Asset hash stored permanently in PDA
+
+---
+
+## Tech Stack
+
+- *Smart Contract:* Rust · Anchor Framework
+- *Frontend:* Next.js · TypeScript · TailwindCSS
+- *Wallet:* Phantom · Solana Wallet Adapter
+- *Network:* Solana Devnet
+- *Deployment:* Vercel
+
+---
+
+## Live Demo
+
+https://solestate-psi.vercel.app
+
+---
+
+## Quick Start
 
 ```bash
+git clone https://github.com/rkht111/solestate
+cd solestate
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
