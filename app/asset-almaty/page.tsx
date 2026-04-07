@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import { addHolding, getTreasuryAddress } from '@/lib/portfolio';
-import { sendBuyTransaction } from '@/lib/solana';
+import { DEMO_MODE_ENABLED, sendBuyTransaction } from '@/lib/solana';
 
 export default function AssetAlmaty() {
   const wallet = useWallet();
@@ -29,14 +29,14 @@ export default function AssetAlmaty() {
 
   const handleBuy = async () => {
     if (!connected) return;
-    if (!treasuryAddress) {
+    if (!DEMO_MODE_ENABLED && !treasuryAddress) {
       setStatus('Укажите NEXT_PUBLIC_ALMATY_TREASURY в .env.local');
       return;
     }
 
     try {
       setIsBuying(true);
-      setStatus('Отправляем транзакцию в Solana Devnet...');
+      setStatus(DEMO_MODE_ENABLED ? 'Demo mode: имитируем покупку...' : 'Отправляем транзакцию в Solana Devnet...');
       const signature = await sendBuyTransaction({
         wallet,
         recipientAddress: treasuryAddress,
@@ -45,7 +45,7 @@ export default function AssetAlmaty() {
         totalUsd,
       });
       addHolding('almaty', amount);
-      setStatus(`Покупка подтверждена. Tx: ${signature.slice(0, 8)}...`);
+      setStatus(`${DEMO_MODE_ENABLED ? 'Demo mode' : 'Покупка подтверждена'}. Tx: ${signature.slice(0, 8)}...`);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Не удалось выполнить покупку';
       setStatus(message);
@@ -111,6 +111,9 @@ export default function AssetAlmaty() {
 
         <div className="rounded-2xl p-8" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,179,237,0.15)'}}>
           <h2 className="text-2xl font-bold mb-6">Купить токены</h2>
+          {DEMO_MODE_ENABLED && (
+            <p className="text-xs mb-4 text-yellow-300">Demo mode включен: покупка проходит без Devnet SOL.</p>
+          )}
           <div className="flex gap-4 items-center mb-4">
             <input
               type="number"

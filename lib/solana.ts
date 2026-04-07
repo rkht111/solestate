@@ -14,6 +14,8 @@ import type { AssetId } from './portfolio';
 
 const COMMITMENT = 'confirmed';
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+const DEMO_FLAG = process.env.NEXT_PUBLIC_DEMO_MODE;
+export const DEMO_MODE_ENABLED = DEMO_FLAG ? DEMO_FLAG === 'true' : true;
 
 let cachedConnection: Connection | null = null;
 
@@ -46,6 +48,11 @@ export async function sendBuyTransaction(params: {
   totalUsd: number;
 }) {
   const { wallet, recipientAddress, assetId, tokenAmount, totalUsd } = params;
+  if (DEMO_MODE_ENABLED) {
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    return `DEMO_BUY_${assetId}_${tokenAmount}_${Math.floor(totalUsd)}_${Date.now().toString(36)}`;
+  }
+
   assertWalletReady(wallet);
 
   const recipient = new PublicKey(recipientAddress);
@@ -86,6 +93,11 @@ export async function sendClaimRequestTransaction(params: {
   claimableUsd: number;
 }) {
   const { wallet, claimableUsd } = params;
+  if (DEMO_MODE_ENABLED) {
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    return `DEMO_CLAIM_${Math.floor(claimableUsd * 100)}_${Date.now().toString(36)}`;
+  }
+
   assertWalletReady(wallet);
   const connection = getConnection();
 

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import { calculatePortfolio, readHoldings } from '@/lib/portfolio';
-import { sendClaimRequestTransaction } from '@/lib/solana';
+import { DEMO_MODE_ENABLED, sendClaimRequestTransaction } from '@/lib/solana';
 
 export default function Dashboard() {
   const wallet = useWallet();
@@ -28,12 +28,12 @@ export default function Dashboard() {
 
     try {
       setIsClaiming(true);
-      setStatus('Отправляем claim-запрос в Solana Devnet...');
+      setStatus(DEMO_MODE_ENABLED ? 'Demo mode: имитируем claim...' : 'Отправляем claim-запрос в Solana Devnet...');
       const signature = await sendClaimRequestTransaction({
         wallet,
         claimableUsd: portfolio.claimableUsd,
       });
-      setStatus(`Claim-запрос отправлен. Tx: ${signature.slice(0, 8)}...`);
+      setStatus(`${DEMO_MODE_ENABLED ? 'Demo mode' : 'Claim-запрос отправлен'}. Tx: ${signature.slice(0, 8)}...`);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Не удалось отправить claim';
       setStatus(message);
@@ -115,6 +115,9 @@ export default function Dashboard() {
             {/* Claim yield */}
             <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
               <h2 className="text-xl font-bold mb-2">Получить доход</h2>
+              {DEMO_MODE_ENABLED && (
+                <p className="text-xs mb-3 text-yellow-300">Demo mode включен: claim проходит без Devnet SOL.</p>
+              )}
               <p className="text-gray-400 text-sm mb-6">
                 Доход начисляется пропорционально вашим токенам на Solana
               </p>
