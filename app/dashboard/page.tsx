@@ -3,9 +3,44 @@
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+
+import { calculatePortfolio, readHoldings } from '@/lib/portfolio';
+import { sendClaimRequestTransaction } from '@/lib/solana';
 
 export default function Dashboard() {
-  const { connected, publicKey } = useWallet();
+  const wallet = useWallet();
+  const { connected, publicKey } = wallet;
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [status, setStatus] = useState('');
+
+  const portfolio = useMemo(() => {
+    const holdings = readHoldings();
+    return calculatePortfolio(holdings);
+  }, []);
+
+  const handleClaim = async () => {
+    if (!connected) return;
+    if (portfolio.claimableUsd <= 0) {
+      setStatus('Нет доступного дохода для claim.');
+      return;
+    }
+
+    try {
+      setIsClaiming(true);
+      setStatus('Отправляем claim-запрос в Solana Devnet...');
+      const signature = await sendClaimRequestTransaction({
+        wallet,
+        claimableUsd: portfolio.claimableUsd,
+      });
+      setStatus(`Claim-запрос отправлен. Tx: ${signature.slice(0, 8)}...`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Не удалось отправить claim';
+      setStatus(message);
+    } finally {
+      setIsClaiming(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
@@ -40,11 +75,15 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
                 <div className="text-gray-400 text-sm">Стоимость портфеля</div>
-                <div className="text-3xl font-bold text-white mt-2">$1,500</div>
+                <div className="text-3xl font-bold text-white mt-2">
+                  ${portfolio.portfolioValueUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </div>
               </div>
               <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
                 <div className="text-gray-400 text-sm">Доступно к получению</div>
-                <div className="text-3xl font-bold text-green-400 mt-2">$45.00</div>
+                <div className="text-3xl font-bold text-green-400 mt-2">
+                  ${portfolio.claimableUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </div>
               </div>
             </div>
 
@@ -52,26 +91,25 @@ export default function Dashboard() {
             <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-6">
               <h2 className="text-xl font-bold mb-4">Мои активы</h2>
 
-              <div className="flex justify-between items-center py-4 border-b border-gray-800">
-                <div>
-                  <div className="font-bold">🏢 Офис в Алматы</div>
-                  <div className="text-gray-400 text-sm mt-1">3 токена • 0.3% владения</div>
+              {portfolio.positions.map((position, index) => (
+                <div
+                  key={position.id}
+                  className={`flex justify-between items-center py-4 ${index < portfolio.positions.length - 1 ? 'border-b border-gray-800' : ''}`}
+                >
+                  <div>
+                    <div className="font-bold">{position.icon} {position.name}</div>
+                    <div className="text-gray-400 text-sm mt-1">
+                      {position.tokens} токен(ов) • {(position.tokens / 10).toFixed(1)}% владения
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`${position.valueUsd > 0 ? 'text-white' : 'text-gray-500'} font-bold`}>
+                      ${position.valueUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-green-400 text-sm">+{position.aprPercent}% годовых</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-white font-bold">$1,500</div>
-                  <div className="text-green-400 text-sm">+12% годовых</div>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center py-4">
-                <div>
-                  <div className="font-bold">🏠 Апартаменты в Астане</div>
-                  <div className="text-gray-400 text-sm mt-1">0 токенов</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-gray-500 font-bold">$0</div>
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Claim yield */}
@@ -80,9 +118,16 @@ export default function Dashboard() {
               <p className="text-gray-400 text-sm mb-6">
                 Доход начисляется пропорционально вашим токенам на Solana
               </p>
-              <button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-4 rounded-xl text-lg">
-                Получить $45.00 USDC
+              <button
+                onClick={handleClaim}
+                disabled={isClaiming}
+                className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-4 rounded-xl text-lg disabled:opacity-60"
+              >
+                {isClaiming
+                  ? 'Подтверждение...'
+                  : `Получить $${portfolio.claimableUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDC`}
               </button>
+              <p className="text-sm text-gray-400 mt-3 break-all">{status}</p>
             </div>
 
           </div>

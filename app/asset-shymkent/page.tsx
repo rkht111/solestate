@@ -3,11 +3,56 @@
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+import { addHolding, getTreasuryAddress } from '@/lib/portfolio';
+import { sendBuyTransaction } from '@/lib/solana';
 
 export default function AssetShymkent() {
-  const { connected } = useWallet();
+  const wallet = useWallet();
+  const { connected } = wallet;
+  const MAX_TOKENS = 880;
   const [amount, setAmount] = useState(1);
+  const [isBuying, setIsBuying] = useState(false);
+  const [status, setStatus] = useState('');
+  const treasuryAddress = useMemo(() => getTreasuryAddress('shymkent'), []);
+  const totalUsd = amount * 85;
+
+  const handleAmountChange = (value: string) => {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed)) {
+      setAmount(1);
+      return;
+    }
+    setAmount(Math.min(Math.max(parsed, 1), MAX_TOKENS));
+  };
+
+  const handleBuy = async () => {
+    if (!connected) return;
+    if (!treasuryAddress) {
+      setStatus('Укажите NEXT_PUBLIC_SHYMKENT_TREASURY в .env.local');
+      return;
+    }
+
+    try {
+      setIsBuying(true);
+      setStatus('Отправляем транзакцию в Solana Devnet...');
+      const signature = await sendBuyTransaction({
+        wallet,
+        recipientAddress: treasuryAddress,
+        assetId: 'shymkent',
+        tokenAmount: amount,
+        totalUsd,
+      });
+      addHolding('shymkent', amount);
+      setStatus(`Покупка подтверждена. Tx: ${signature.slice(0, 8)}...`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Не удалось выполнить покупку';
+      setStatus(message);
+    } finally {
+      setIsBuying(false);
+    }
+  };
 
   return (
     <main className="min-h-screen text-white" style={{background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1530 50%, #0a1628 100%)'}}>
@@ -70,21 +115,29 @@ export default function AssetShymkent() {
             <input
               type="number"
               min="1"
-              max="880"
+              max={MAX_TOKENS}
               value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              onChange={(e) => handleAmountChange(e.target.value)}
               className="text-white rounded-xl px-4 py-3 w-32 text-center text-xl border"
               style={{background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(246,173,85,0.3)'}}
             />
             <div className="text-gray-400">
-              × $85 = <span className="text-white font-bold text-xl">${(amount * 85).toLocaleString()}</span>
+              × $85 = <span className="text-white font-bold text-xl">${totalUsd.toLocaleString()}</span>
             </div>
           </div>
 
           {connected ? (
-            <button className="w-full font-bold py-4 rounded-xl text-lg text-black mt-4" style={{background: 'linear-gradient(90deg, #f6ad55, #fbd38d)'}}>
-              Купить {amount} токен(а) на Solana
-            </button>
+            <>
+              <button
+                onClick={handleBuy}
+                disabled={isBuying}
+                className="w-full font-bold py-4 rounded-xl text-lg text-black mt-4 disabled:opacity-60"
+                style={{background: 'linear-gradient(90deg, #f6ad55, #fbd38d)'}}
+              >
+                {isBuying ? 'Подтверждение...' : `Купить ${amount} токен(а) на Solana`}
+              </button>
+              <p className="text-sm text-gray-400 mt-3 break-all">{status}</p>
+            </>
           ) : (
             <div className="mt-4 text-center py-4 rounded-xl" style={{background: 'rgba(246,173,85,0.05)', border: '1px solid rgba(246,173,85,0.1)'}}>
               <p className="text-gray-400">Подключите кошелёк чтобы купить токены</p>

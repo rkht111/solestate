@@ -10,9 +10,8 @@ import { useMemo } from 'react';
 import('@solana/wallet-adapter-react-ui/styles.css');
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], [network]);
+  const endpoint = clusterApiUrl(WalletAdapterNetwork.Devnet);
+  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
